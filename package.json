@@ -8,7 +8,6 @@
   "scripts": {
     "clean": "rm -rf dist",
     "build": "npm run clean && rollup -c",
-    "build:watch": "rollup -c -w",
     "dev": "npm run clean && rollup -c -w"
   },
   "devDependencies": {

@@ -24,7 +24,7 @@ const config = {
   ],
   plugins: [
     autoExternal({ packagePath: "./package.json" }),
-    sourcemaps(),
+    sourcemaps({ include: "node_modules/**" }),
     babel(),
     commonjs(),
     typescript(),
