@@ -2,6 +2,7 @@ import ImageExtension, { ImageOptions } from "@tiptap/extension-image";
 import { isMobileScreen } from "../utils/is-mobile-screen.util";
 import { removeImageControlsAndResetStyles } from "../utils/remove-image-controls.util";
 import { addImageAlignmentControls } from "../utils/add-image-alignment-controls.util";
+import { addImageResizeControls } from "../utils/add-image-resize-controls.util";
 
 export interface CustomImageOptions extends ImageOptions {
   resizable: boolean;
@@ -83,15 +84,6 @@ const TiptapImageResizeWithCaption = ImageExtension.extend<CustomImageOptions>({
 
       if (!editable) return { dom: containerElement };
 
-      const isMobile = document.documentElement.clientWidth < 768;
-      const dotPosition = isMobile ? "-8px" : "-4px";
-      const dotsPosition = [
-        `top: ${dotPosition}; left: ${dotPosition}; cursor: nwse-resize;`,
-        `top: ${dotPosition}; right: ${dotPosition}; cursor: nesw-resize;`,
-        `bottom: ${dotPosition}; left: ${dotPosition}; cursor: nesw-resize;`,
-        `bottom: ${dotPosition}; right: ${dotPosition}; cursor: nwse-resize;`,
-      ];
-
       let isResizing = false;
       let startX: number;
       let startWidth: number;
@@ -126,6 +118,18 @@ const TiptapImageResizeWithCaption = ImageExtension.extend<CustomImageOptions>({
             dispatchNodeView();
             this.editor.commands.focus();
           });
+
+          addImageResizeControls(
+            containerElement,
+            imageElement,
+            isResizing,
+            startX,
+            startWidth,
+            () => {
+              dispatchNodeView();
+              this.editor.commands.focus();
+            }
+          );
         }
       );
 
