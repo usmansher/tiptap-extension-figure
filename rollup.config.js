@@ -5,6 +5,7 @@ const sourcemaps = require("rollup-plugin-sourcemaps");
 const commonjs = require("@rollup/plugin-commonjs");
 const babel = require("@rollup/plugin-babel");
 const typescript = require("rollup-plugin-typescript2");
+const url = require("@rollup/plugin-url");
 
 const config = {
   input: "src/index.ts",
@@ -28,6 +29,10 @@ const config = {
     babel(),
     commonjs(),
     typescript(),
+    url({
+      include: ["**/*.svg"], // Only process SVG files
+      limit: Infinity, // Embed all assets
+    }),
   ],
 };
 

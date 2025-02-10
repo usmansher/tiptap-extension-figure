@@ -1,11 +1,3 @@
-import { Extension } from '@tiptap/core'
+import TiptapImageResizeWithCaption from "./component/tip-tap-image-resize-with-caption";
 
-const MyExtension = Extension.create({
-  name: 'MyExtension',
-
-  // do your stuff here
-})
-
-export { MyExtension }
-
-export default MyExtension
+export default TiptapImageResizeWithCaption;
