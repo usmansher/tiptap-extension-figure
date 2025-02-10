@@ -1,3 +1,9 @@
+import {
+  mergeAttributes,
+  findChildrenInRange,
+  Tracker,
+  nodeInputRule,
+} from "@tiptap/core";
 import ImageExtension, { ImageOptions } from "@tiptap/extension-image";
 import { isMobileScreen } from "../utils/is-mobile-screen.util";
 import { removeImageControlsAndResetStyles } from "../utils/remove-image-controls.util";
@@ -10,7 +16,9 @@ export interface CustomImageOptions extends ImageOptions {
   captionEnabled: boolean;
 }
 
-const TiptapImageResizeWithCaption = ImageExtension.extend<CustomImageOptions>({
+export const inputRegex = /!\[(.+|:?)]\((\S+)(?:(?:\s+)["'](\S+)["'])?\)/;
+
+const TiptapImageFigureExtension = ImageExtension.extend<CustomImageOptions>({
   addOptions() {
     return {
       ...this.parent?.(),
@@ -23,6 +31,14 @@ const TiptapImageResizeWithCaption = ImageExtension.extend<CustomImageOptions>({
     };
   },
 
+  group: "block",
+
+  draggable: true,
+
+  isolating: true,
+
+  content: "inline*",
+
   addStorage() {
     return {
       elementsVisible: false,
@@ -32,16 +48,172 @@ const TiptapImageResizeWithCaption = ImageExtension.extend<CustomImageOptions>({
   addAttributes() {
     return {
       ...this.parent?.(),
+      src: {
+        default: null,
+        parseHTML: (element) => {
+          const img = element.querySelector("img");
+          return img?.getAttribute("src");
+        },
+      },
+      alt: {
+        default: null,
+        parseHTML: (element) => {
+          const img = element.querySelector("img");
+          return img?.getAttribute("alt");
+        },
+      },
+      title: {
+        default: null,
+        parseHTML: (element) => {
+          const img = element.querySelector("img");
+          return img?.getAttribute("title");
+        },
+      },
       style: {
         // This style is applied to the wrapper element
         default: "width: 100%; height: auto; cursor: pointer;",
         parseHTML: (element) => {
           const width = element.getAttribute("width");
+          // const img = element.querySelector("img");
+          // const width = img?.getAttribute("width");
           return width
             ? `width: ${width}px; height: auto; cursor: pointer;`
             : `${element.style.cssText}`;
         },
       },
+    };
+  },
+
+  parseHTML() {
+    return [
+      {
+        tag: "figure",
+        contentElement: "figcaption",
+      },
+      {
+        tag: "img[src]",
+      },
+    ];
+  },
+
+  renderHTML({ HTMLAttributes, node }) {
+    const hasCaption = node.content.size > 0;
+
+    if (hasCaption) {
+      return [
+        "figure",
+        this.options.HTMLAttributes,
+        [
+          "img",
+          mergeAttributes(HTMLAttributes, {
+            draggable: false,
+            contenteditable: false,
+          }),
+        ],
+        ["figcaption", 0],
+      ];
+    }
+
+    return ["img", mergeAttributes(HTMLAttributes)];
+  },
+
+  addCommands() {
+    return {
+      ...this.parent?.(),
+      setImageFigure:
+        (options: {
+          src: string;
+          alt?: string;
+          title?: string;
+          caption?: string;
+        }) =>
+        ({ chain }) => {
+          return chain()
+            .insertContent({
+              type: this.name,
+              attrs: {
+                src: options.src,
+                alt: options.alt,
+                title: options.title,
+              },
+              content: options.caption
+                ? [{ type: "text", text: options.caption }]
+                : [],
+            })
+            .run();
+        },
+
+      convertToFigure:
+        () =>
+        ({ tr, commands }) => {
+          const { doc, selection } = tr;
+          const { from, to } = selection;
+          const images = findChildrenInRange(
+            doc,
+            { from, to },
+            (node) => node.type.name === "image"
+          );
+
+          if (!images.length) return false;
+
+          const tracker = new Tracker(tr);
+
+          return commands.forEach(images, ({ node, pos }) => {
+            const mapResult = tracker.map(pos);
+            if (mapResult.deleted) return false;
+
+            const range = {
+              from: mapResult.position,
+              to: mapResult.position + node.nodeSize,
+            };
+
+            return commands.insertContentAt(range, {
+              type: this.name,
+              attrs: {
+                src: node.attrs.src,
+                alt: node.attrs.alt,
+                title: node.attrs.title,
+                style: node.attrs.style,
+              },
+            });
+          });
+        },
+
+      convertToImage:
+        () =>
+        ({ tr, commands }) => {
+          const { doc, selection } = tr;
+          const { from, to } = selection;
+          const figures = findChildrenInRange(
+            doc,
+            { from, to },
+            (node) => node.type.name === this.name
+          );
+
+          if (!figures.length) return false;
+
+          const tracker = new Tracker(tr);
+
+          return commands.forEach(figures, ({ node, pos }) => {
+            const mapResult = tracker.map(pos);
+            if (mapResult.deleted) return false;
+
+            const range = {
+              from: mapResult.position,
+              to: mapResult.position + node.nodeSize,
+            };
+
+            return commands.insertContentAt(range, {
+              type: "image",
+              attrs: {
+                src: node.attrs.src,
+                alt: node.attrs.alt,
+                title: node.attrs.title,
+                style: node.attrs.style,
+              },
+            });
+          });
+        },
     };
   },
 
@@ -53,28 +225,39 @@ const TiptapImageResizeWithCaption = ImageExtension.extend<CustomImageOptions>({
             ...node.attrs,
             style: imageElement.style.cssText,
           };
-          view.dispatch(view.state.tr.setNodeMarkup(getPos(), null, newAttrs));
+          editor.view.dispatch(
+            editor.view.state.tr.setNodeMarkup(getPos(), null, newAttrs)
+          );
           this.storage.elementsVisible = false;
         }
       };
 
       const {
-        view,
         options: { editable },
       } = editor;
       const { style } = node.attrs;
 
-      const wrapperElement = document.createElement("div");
+      // Create wrapper based on content
+      const wrapperElement = document.createElement(
+        node.content.size > 0 ? "figure" : "div"
+      );
       const containerElement = document.createElement("div");
       const imageElement = document.createElement("img");
+      const captionElement = document.createElement("figcaption");
 
-      wrapperElement.setAttribute("style", `display: flex;`);
+      // Set up wrapper
+      wrapperElement.setAttribute(
+        "style",
+        `display: flex; flex-direction: column; position: relative;`
+      );
       wrapperElement.appendChild(containerElement);
 
-      containerElement.setAttribute("style", style);
+      // Set up container
+      containerElement.setAttribute("style", `${style} position: relative;`);
       containerElement.style.cursor = "pointer";
       containerElement.appendChild(imageElement);
 
+      // Set up image attributes
       Object.entries(node.attrs).forEach(([key, value]) => {
         if (value === undefined || value === null) {
           return;
@@ -82,78 +265,97 @@ const TiptapImageResizeWithCaption = ImageExtension.extend<CustomImageOptions>({
         imageElement.setAttribute(key, value);
       });
 
-      if (!editable) return { dom: containerElement };
+      // Add caption if needed
+      if (node.content.size > 0) {
+        wrapperElement.appendChild(captionElement);
+        captionElement.setAttribute(
+          "style",
+          "text-align: center; margin-top: 8px; min-height: 1em;"
+        );
+        captionElement.setAttribute("contenteditable", "true");
+      }
 
+      if (!editable) return { dom: wrapperElement };
+
+      // Initialize control variables
       let isResizing = false;
-      let startX: number;
-      let startWidth: number;
+      let startX = 0;
+      let startWidth = 0;
 
-      const containerClickListener = containerElement.addEventListener(
-        "click",
-        (event) => {
-          // We stop propagation to prevent the document click listener from firing
-          event.stopPropagation();
+      // Handle click on container
+      containerElement.addEventListener("click", (event) => {
+        event.stopPropagation();
+        event.preventDefault();
 
-          const isMobile = isMobileScreen();
-          if (isMobile) {
-            const focusedElement = document.querySelector(
-              ".ProseMirror-focused"
-            ) as HTMLElement | null;
-            focusedElement?.blur();
-          }
-
-          // If elements are already visible, skip the rest of the function
-          if (this.storage.elementsVisible) {
-            return;
-          }
-
-          // If elements are not visible, set the flag to true and add the elements
-          this.storage.elementsVisible = true;
-
-          // Add border to the container element to indicate that it's selected
-          containerElement.style.border = "1px dashed #6C6C6C";
-          containerElement.style.position = "relative";
-
-          addImageAlignmentControls(containerElement, imageElement, () => {
-            dispatchNodeView();
-            this.editor.commands.focus();
-          });
-
-          addImageResizeControls(
-            containerElement,
-            imageElement,
-            isResizing,
-            startX,
-            startWidth,
-            () => {
-              dispatchNodeView();
-              this.editor.commands.focus();
-            }
-          );
+        const isMobile = isMobileScreen();
+        if (isMobile) {
+          const focusedElement = document.querySelector(
+            ".ProseMirror-focused"
+          ) as HTMLElement | null;
+          focusedElement?.blur();
         }
-      );
 
-      // Attach click listener to the whole document to remove all custom UI elements
-      // when the user clicks outside the image
-      const documentClickListener = document.addEventListener(
-        "click",
-        (event) => {
-          // Remove all custom UI elements
+        // Remove existing controls first
+        removeImageControlsAndResetStyles(
+          event.target as HTMLElement,
+          containerElement
+        );
+
+        // Show new controls
+        containerElement.style.border = "1px dashed #6C6C6C";
+
+        addImageAlignmentControls(containerElement, imageElement, () => {
+          dispatchNodeView();
+          editor.commands.focus();
+        });
+
+        addImageResizeControls(
+          containerElement,
+          imageElement,
+          isResizing,
+          startX,
+          startWidth,
+          () => {
+            dispatchNodeView();
+            editor.commands.focus();
+          }
+        );
+
+        this.storage.elementsVisible = true;
+      });
+
+      // Handle clicks outside
+      document.addEventListener("click", (event) => {
+        if (!containerElement.contains(event.target as Node)) {
           removeImageControlsAndResetStyles(
             event.target as HTMLElement,
             containerElement
           );
           this.storage.elementsVisible = false;
         }
-      );
+      });
 
       return {
         dom: wrapperElement,
+        contentDOM: node.content.size > 0 ? captionElement : undefined,
       };
     };
   },
+
+  addInputRules() {
+    return [
+      nodeInputRule({
+        find: inputRegex,
+        type: this.type,
+        getAttributes: (match) => {
+          const [, alt, src, title] = match;
+          return { src, alt, title };
+        },
+      }),
+    ];
+  },
 });
 
-export { TiptapImageResizeWithCaption };
+export { TiptapImageFigureExtension };
 
-export default TiptapImageResizeWithCaption;
+export default TiptapImageFigureExtension;

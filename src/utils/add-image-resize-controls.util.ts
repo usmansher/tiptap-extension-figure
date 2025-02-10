@@ -1,7 +1,7 @@
 import { isMobileScreen } from "./is-mobile-screen.util";
 
 export const addImageResizeControls = (
-  containerElement: HTMLDivElement,
+  containerElement: HTMLElement,
   imageElement: HTMLImageElement,
   isResizing: boolean,
   startX: number,
@@ -82,6 +82,7 @@ export const addImageResizeControls = (
           if (isResizing) {
             isResizing = false;
           }
+
           onResize();
 
           document.removeEventListener("touchmove", onTouchMove);
@@ -93,6 +94,7 @@ export const addImageResizeControls = (
       },
       { passive: false }
     );
+
     containerElement.appendChild(dotElement);
   });
 };

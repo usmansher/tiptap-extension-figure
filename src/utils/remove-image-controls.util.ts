@@ -1,6 +1,6 @@
 export const removeImageControlsAndResetStyles = (
   clickedElement: HTMLElement,
-  containerElement: HTMLDivElement
+  containerElement: HTMLElement
 ) => {
   const containerContainsClickedElement =
     containerElement.contains(clickedElement);

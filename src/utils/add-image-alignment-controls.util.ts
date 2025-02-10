@@ -29,7 +29,7 @@ const imageAlignmentControls: ImageAlignmentControls[] = [
 ];
 
 export const addImageAlignmentControls = (
-  containerElement: HTMLDivElement,
+  containerElement: HTMLElement,
   imageElement: HTMLImageElement,
   onAlign: () => void
 ) => {
