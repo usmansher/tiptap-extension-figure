@@ -267,15 +267,15 @@ const TiptapImageFigureExtension = ImageExtension.extend<CustomImageOptions>({
 
       // Add caption if needed
       if (node.content.size > 0) {
-        wrapperElement.appendChild(captionElement);
         captionElement.setAttribute(
           "style",
           "text-align: center; margin-top: 8px; min-height: 1em;"
         );
         captionElement.setAttribute("contenteditable", "true");
+        wrapperElement.appendChild(captionElement);
       }
 
-      if (!editable) return { dom: wrapperElement };
+      if (!editable) return { dom: wrapperElement, contentDOM: captionElement };
 
       // Initialize control variables
       let isResizing = false;
@@ -338,6 +338,10 @@ const TiptapImageFigureExtension = ImageExtension.extend<CustomImageOptions>({
       return {
         dom: wrapperElement,
         contentDOM: node.content.size > 0 ? captionElement : undefined,
+        ignoreMutation: (mutation) => {
+          // We must ignore mutations that happened outside the captionElement
+          return !captionElement.contains(mutation.target);
+        },
       };
     };
   },
