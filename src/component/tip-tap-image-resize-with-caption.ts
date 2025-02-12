@@ -1,14 +1,14 @@
-import {
-  mergeAttributes,
-  findChildrenInRange,
-  Tracker,
-  nodeInputRule,
-} from "@tiptap/core";
+import { mergeAttributes, nodeInputRule } from "@tiptap/core";
 import ImageExtension, { ImageOptions } from "@tiptap/extension-image";
 import { isMobileScreen } from "../utils/is-mobile-screen.util";
 import { removeImageControlsAndResetStyles } from "../utils/remove-image-controls.util";
 import { addImageAlignmentControls } from "../utils/add-image-alignment-controls.util";
 import { addImageResizeControls } from "../utils/add-image-resize-controls.util";
+import { addCaptionControls } from "../utils/add-caption-controls.util";
+import {
+  changeImageToFigure,
+  changeFigureToImage,
+} from "../utils/replace-element.util";
 
 export interface CustomImageOptions extends ImageOptions {
   resizable: boolean;
@@ -117,106 +117,6 @@ const TiptapImageFigureExtension = ImageExtension.extend<CustomImageOptions>({
     return ["img", mergeAttributes(HTMLAttributes)];
   },
 
-  addCommands() {
-    return {
-      ...this.parent?.(),
-      setImageFigure:
-        (options: {
-          src: string;
-          alt?: string;
-          title?: string;
-          caption?: string;
-        }) =>
-        ({ chain }) => {
-          return chain()
-            .insertContent({
-              type: this.name,
-              attrs: {
-                src: options.src,
-                alt: options.alt,
-                title: options.title,
-              },
-              content: options.caption
-                ? [{ type: "text", text: options.caption }]
-                : [],
-            })
-            .run();
-        },
-
-      convertToFigure:
-        () =>
-        ({ tr, commands }) => {
-          const { doc, selection } = tr;
-          const { from, to } = selection;
-          const images = findChildrenInRange(
-            doc,
-            { from, to },
-            (node) => node.type.name === "image"
-          );
-
-          if (!images.length) return false;
-
-          const tracker = new Tracker(tr);
-
-          return commands.forEach(images, ({ node, pos }) => {
-            const mapResult = tracker.map(pos);
-            if (mapResult.deleted) return false;
-
-            const range = {
-              from: mapResult.position,
-              to: mapResult.position + node.nodeSize,
-            };
-
-            return commands.insertContentAt(range, {
-              type: this.name,
-              attrs: {
-                src: node.attrs.src,
-                alt: node.attrs.alt,
-                title: node.attrs.title,
-                style: node.attrs.style,
-              },
-            });
-          });
-        },
-
-      convertToImage:
-        () =>
-        ({ tr, commands }) => {
-          const { doc, selection } = tr;
-          const { from, to } = selection;
-          const figures = findChildrenInRange(
-            doc,
-            { from, to },
-            (node) => node.type.name === this.name
-          );
-
-          if (!figures.length) return false;
-
-          const tracker = new Tracker(tr);
-
-          return commands.forEach(figures, ({ node, pos }) => {
-            const mapResult = tracker.map(pos);
-            if (mapResult.deleted) return false;
-
-            const range = {
-              from: mapResult.position,
-              to: mapResult.position + node.nodeSize,
-            };
-
-            return commands.insertContentAt(range, {
-              type: "image",
-              attrs: {
-                src: node.attrs.src,
-                alt: node.attrs.alt,
-                title: node.attrs.title,
-                style: node.attrs.style,
-              },
-            });
-          });
-        },
-    };
-  },
-
   addNodeView() {
     return ({ node, editor, getPos }) => {
       const dispatchNodeView = () => {
@@ -318,6 +218,35 @@ const TiptapImageFigureExtension = ImageExtension.extend<CustomImageOptions>({
           () => {
             dispatchNodeView();
             editor.commands.focus();
+          }
+        );
+
+        addCaptionControls(
+          wrapperElement,
+          () => {
+            // On caption remove
+            // wrapperElement.removeChild(captionElement);
+
+            // removeImageControlsAndResetStyles(captionElement, wrapperElement);
+
+            changeFigureToImage(wrapperElement);
+
+            this.storage.elementsVisible = false;
+          },
+          () => {
+            // On caption add
+            // captionElement.setAttribute(
+            //   "style",
+            //   "text-align: center; margin-top: 8px; min-height: 1em;"
+            // );
+            // captionElement.setAttribute("contenteditable", "true");
+            // wrapperElement.appendChild(captionElement);
+
+            // removeImageControlsAndResetStyles(captionElement, wrapperElement);
+
+            changeImageToFigure(wrapperElement, captionElement);
+
+            this.storage.elementsVisible = false;
           }
         );
 
