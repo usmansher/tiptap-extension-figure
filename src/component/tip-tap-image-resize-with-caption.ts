@@ -253,8 +253,10 @@ const TiptapImageFigureExtension = ImageExtension.extend<CustomImageOptions>({
       wrapperElement.appendChild(containerElement);
 
       // Set up container
-      containerElement.setAttribute("style", `${style} position: relative;`);
-      containerElement.style.cursor = "pointer";
+      containerElement.setAttribute(
+        "style",
+        `${style} position: relative; cursor: pointer; width: fit-content;`
+      );
       containerElement.appendChild(imageElement);
 
       // Set up image attributes
