@@ -241,7 +241,6 @@ const TiptapImageFigureExtension = ImageExtension.extend<CustomImageOptions>({
       const wrapperElement = document.createElement(
         node.content.size > 0 ? "figure" : "div"
       );
-      const containerElement = document.createElement("div");
       const imageElement = document.createElement("img");
       const captionElement = document.createElement("figcaption");
 
@@ -250,14 +249,13 @@ const TiptapImageFigureExtension = ImageExtension.extend<CustomImageOptions>({
         "style",
         `display: flex; flex-direction: column; position: relative;`
       );
-      wrapperElement.appendChild(containerElement);
 
       // Set up container
-      containerElement.setAttribute(
+      wrapperElement.setAttribute(
         "style",
         `${style} position: relative; cursor: pointer; width: fit-content;`
       );
-      containerElement.appendChild(imageElement);
+      wrapperElement.appendChild(imageElement);
 
       // Set up image attributes
       Object.entries(node.attrs).forEach(([key, value]) => {
@@ -285,7 +283,7 @@ const TiptapImageFigureExtension = ImageExtension.extend<CustomImageOptions>({
       let startWidth = 0;
 
       // Handle click on container
-      containerElement.addEventListener("click", (event) => {
+      wrapperElement.addEventListener("click", (event) => {
         event.stopPropagation();
         event.preventDefault();
 
@@ -300,19 +298,19 @@ const TiptapImageFigureExtension = ImageExtension.extend<CustomImageOptions>({
         // Remove existing controls first
         removeImageControlsAndResetStyles(
           event.target as HTMLElement,
-          containerElement
+          wrapperElement
         );
 
         // Show new controls
-        containerElement.style.border = "1px dashed #6C6C6C";
+        wrapperElement.style.border = "1px dashed #6C6C6C";
 
-        addImageAlignmentControls(containerElement, imageElement, () => {
+        addImageAlignmentControls(wrapperElement, imageElement, () => {
           dispatchNodeView();
           editor.commands.focus();
         });
 
         addImageResizeControls(
-          containerElement,
+          wrapperElement,
           imageElement,
           isResizing,
           startX,
@@ -328,10 +326,10 @@ const TiptapImageFigureExtension = ImageExtension.extend<CustomImageOptions>({
 
       // Handle clicks outside
       document.addEventListener("click", (event) => {
-        if (!containerElement.contains(event.target as Node)) {
+        if (!wrapperElement.contains(event.target as Node)) {
           removeImageControlsAndResetStyles(
             event.target as HTMLElement,
-            containerElement
+            wrapperElement
           );
           this.storage.elementsVisible = false;
         }

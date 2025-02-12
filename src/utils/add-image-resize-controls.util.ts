@@ -1,7 +1,7 @@
 import { isMobileScreen } from "./is-mobile-screen.util";
 
 export const addImageResizeControls = (
-  containerElement: HTMLElement,
+  wrapperElement: HTMLElement,
   imageElement: HTMLImageElement,
   isResizing: boolean,
   startX: number,
@@ -29,7 +29,7 @@ export const addImageResizeControls = (
       e.preventDefault();
       isResizing = true;
       startX = e.clientX;
-      startWidth = containerElement.offsetWidth;
+      startWidth = wrapperElement.offsetWidth;
 
       const onMouseMove = (e: MouseEvent) => {
         if (!isResizing) return;
@@ -38,7 +38,7 @@ export const addImageResizeControls = (
           index % 2 === 0 ? -(e.clientX - startX) : e.clientX - startX;
 
         const newWidth = startWidth + deltaX;
-        containerElement.style.width = newWidth + "px";
+        wrapperElement.style.width = newWidth + "px";
         imageElement.style.width = newWidth + "px";
       };
 
@@ -63,7 +63,7 @@ export const addImageResizeControls = (
         e.cancelable && e.preventDefault();
         isResizing = true;
         startX = e.touches[0].clientX;
-        startWidth = containerElement.offsetWidth;
+        startWidth = wrapperElement.offsetWidth;
 
         const onTouchMove = (e: TouchEvent) => {
           if (!isResizing) return;
@@ -74,7 +74,7 @@ export const addImageResizeControls = (
               : e.touches[0].clientX - startX;
 
           const newWidth = startWidth + deltaX;
-          containerElement.style.width = newWidth + "px";
+          wrapperElement.style.width = newWidth + "px";
           imageElement.style.width = newWidth + "px";
         };
 
@@ -95,6 +95,6 @@ export const addImageResizeControls = (
       { passive: false }
     );
 
-    containerElement.appendChild(dotElement);
+    wrapperElement.appendChild(dotElement);
   });
 };

@@ -29,7 +29,7 @@ const imageAlignmentControls: ImageAlignmentControls[] = [
 ];
 
 export const addImageAlignmentControls = (
-  containerElement: HTMLElement,
+  wrapperElement: HTMLElement,
   imageElement: HTMLImageElement,
   onAlign: () => void
 ) => {
@@ -58,7 +58,7 @@ export const addImageAlignmentControls = (
     "position: absolute; top: 0%; left: 50%; width: 100px; height: 25px; z-index: 999; background-color: rgba(255, 255, 255, 0.7); border-radius: 4px; border: 2px solid #6C6C6C; cursor: pointer; transform: translate(-50%, -50%); display: flex; justify-content: space-between; align-items: center; padding: 0 10px;"
   );
 
-  containerElement.appendChild(imageAlignmentContainer);
+  wrapperElement.appendChild(imageAlignmentContainer);
 };
 
 const onIconMouseOver = (event: MouseEvent) => {
