@@ -6,6 +6,7 @@ const commonjs = require("@rollup/plugin-commonjs");
 const babel = require("@rollup/plugin-babel");
 const typescript = require("rollup-plugin-typescript2");
 const url = require("@rollup/plugin-url");
+const postcss = require("rollup-plugin-postcss");
 
 const config = {
   input: "src/index.ts",
@@ -32,6 +33,10 @@ const config = {
     url({
       include: ["**/*.svg"], // Only process SVG files
       limit: Infinity, // Embed all assets
+    }),
+    postcss({
+      extract: true,
+      minimize: true,
     }),
   ],
 };
