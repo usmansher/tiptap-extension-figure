@@ -27,7 +27,10 @@ const config = {
   plugins: [
     autoExternal({ packagePath: "./package.json" }),
     sourcemaps({ include: "node_modules/**" }),
-    babel(),
+    babel({
+      babelHelpers: "bundled",
+      exclude: "node_modules/**",
+    }),
     commonjs(),
     typescript(),
     url({
@@ -35,7 +38,7 @@ const config = {
       limit: Infinity, // Embed all assets
     }),
     postcss({
-      extract: true,
+      inject: true,
       minimize: true,
     }),
   ],
