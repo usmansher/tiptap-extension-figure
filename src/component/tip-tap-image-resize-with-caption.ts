@@ -10,6 +10,8 @@ import {
   changeFigureToImage,
 } from "../utils/replace-element.util";
 
+import styles from "../assets/styles/styles.css";
+
 export interface CustomImageOptions extends ImageOptions {
   resizable: boolean;
   alignable: boolean;
@@ -141,21 +143,13 @@ const TiptapImageFigureExtension = ImageExtension.extend<CustomImageOptions>({
       const wrapperElement = document.createElement(
         node.content.size > 0 ? "figure" : "div"
       );
+      wrapperElement.setAttribute("class", styles["wrapper-element"]);
+      wrapperElement.setAttribute("style", style);
+
       const imageElement = document.createElement("img");
-      const captionElement = document.createElement("figcaption");
-
-      // Set up wrapper
-      wrapperElement.setAttribute(
-        "style",
-        `display: flex; flex-direction: column; position: relative;`
-      );
-
-      // Set up container
-      wrapperElement.setAttribute(
-        "style",
-        `${style} position: relative; cursor: pointer; width: fit-content;`
-      );
       wrapperElement.appendChild(imageElement);
+
+      const captionElement = document.createElement("figcaption");
 
       // Set up image attributes
       Object.entries(node.attrs).forEach(([key, value]) => {
@@ -167,10 +161,7 @@ const TiptapImageFigureExtension = ImageExtension.extend<CustomImageOptions>({
 
       // Add caption if needed
       if (node.content.size > 0) {
-        captionElement.setAttribute(
-          "style",
-          "text-align: center; margin-top: 8px; min-height: 1em;"
-        );
+        captionElement.setAttribute("class", styles["caption-element"]);
         captionElement.setAttribute("contenteditable", "true");
         wrapperElement.appendChild(captionElement);
       }
@@ -198,13 +189,14 @@ const TiptapImageFigureExtension = ImageExtension.extend<CustomImageOptions>({
         // Remove existing controls first
         removeImageControlsAndResetStyles(
           event.target as HTMLElement,
-          wrapperElement
+          wrapperElement,
+          styles
         );
 
         // Show new controls
-        wrapperElement.style.border = "1px dashed #6C6C6C";
+        wrapperElement.classList.toggle(styles["active"]);
 
-        addImageAlignmentControls(wrapperElement, imageElement, () => {
+        addImageAlignmentControls(wrapperElement, imageElement, styles, () => {
           dispatchNodeView();
           editor.commands.focus();
         });
@@ -215,6 +207,7 @@ const TiptapImageFigureExtension = ImageExtension.extend<CustomImageOptions>({
           isResizing,
           startX,
           startWidth,
+          styles,
           () => {
             dispatchNodeView();
             editor.commands.focus();
@@ -223,27 +216,15 @@ const TiptapImageFigureExtension = ImageExtension.extend<CustomImageOptions>({
 
         addCaptionControls(
           wrapperElement,
+          styles,
           () => {
             // On caption remove
-            // wrapperElement.removeChild(captionElement);
-
-            // removeImageControlsAndResetStyles(captionElement, wrapperElement);
-
             changeFigureToImage(wrapperElement);
 
             this.storage.elementsVisible = false;
           },
           () => {
             // On caption add
-            // captionElement.setAttribute(
-            //   "style",
-            //   "text-align: center; margin-top: 8px; min-height: 1em;"
-            // );
-            // captionElement.setAttribute("contenteditable", "true");
-            // wrapperElement.appendChild(captionElement);
-
-            // removeImageControlsAndResetStyles(captionElement, wrapperElement);
-
             changeImageToFigure(wrapperElement, captionElement);
 
             this.storage.elementsVisible = false;
@@ -258,7 +239,8 @@ const TiptapImageFigureExtension = ImageExtension.extend<CustomImageOptions>({
         if (!wrapperElement.contains(event.target as Node)) {
           removeImageControlsAndResetStyles(
             event.target as HTMLElement,
-            wrapperElement
+            wrapperElement,
+            styles
           );
           this.storage.elementsVisible = false;
         }

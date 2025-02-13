@@ -6,6 +6,7 @@ export const addImageResizeControls = (
   isResizing: boolean,
   startX: number,
   startWidth: number,
+  styles: Record<string, string>,
   onResize: () => void
 ) => {
   const isMobile = isMobileScreen();
@@ -20,9 +21,10 @@ export const addImageResizeControls = (
 
   Array.from({ length: 4 }, (_, index) => {
     const dotElement = document.createElement("div");
+    dotElement.setAttribute("class", styles["dot-element"]);
     dotElement.setAttribute(
       "style",
-      `position: absolute; width: ${dotSize}px; height: ${dotSize}px; border: 1.5px solid #6C6C6C; border-radius: 50%; ${dotsPosition[index]}`
+      `width: ${dotSize}px; height: ${dotSize}px; ${dotsPosition[index]}`
     );
 
     dotElement.addEventListener("mousedown", (e) => {

@@ -31,6 +31,7 @@ const imageAlignmentControls: ImageAlignmentControls[] = [
 export const addImageAlignmentControls = (
   wrapperElement: HTMLElement,
   imageElement: HTMLImageElement,
+  styles: Record<string, string>,
   onAlign: () => void
 ) => {
   const imageAlignmentContainer = document.createElement("div");
@@ -39,11 +40,9 @@ export const addImageAlignmentControls = (
     const imageAlignmentControl = document.createElement("img");
     imageAlignmentControl.src = imageControl.icon;
     imageAlignmentControl.setAttribute(
-      "style",
-      `cursor: pointer; font-size: 20px;`
+      "class",
+      styles["image-alignment-control"]
     );
-    imageAlignmentControl.addEventListener("mouseover", onIconMouseOver);
-    imageAlignmentControl.addEventListener("mouseout", onIconMouseOut);
     imageAlignmentControl.addEventListener("click", (event) => {
       event.stopPropagation();
       imageElement.style.cssText = `${imageElement.style.cssText} ${imageControl.styleToApply}`;
@@ -54,19 +53,9 @@ export const addImageAlignmentControls = (
   });
 
   imageAlignmentContainer.setAttribute(
-    "style",
-    "position: absolute; top: 0%; left: 50%; width: 100px; height: 25px; z-index: 999; background-color: rgba(255, 255, 255, 0.7); border-radius: 4px; border: 2px solid #6C6C6C; cursor: pointer; transform: translate(-50%, -50%); display: flex; justify-content: space-between; align-items: center; padding: 0 10px;"
+    "class",
+    styles["image-alignment-container"]
   );
 
   wrapperElement.appendChild(imageAlignmentContainer);
-};
-
-const onIconMouseOver = (event: MouseEvent) => {
-  const element = event.target as HTMLElement;
-  element.style.opacity = "0.5";
-};
-
-const onIconMouseOut = (event: MouseEvent) => {
-  const element = event.target as HTMLElement;
-  element.style.opacity = "1";
 };

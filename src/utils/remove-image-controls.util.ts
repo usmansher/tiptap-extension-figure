@@ -1,6 +1,7 @@
 export const removeImageControlsAndResetStyles = (
   clickedElement: HTMLElement,
-  wrapperElement: HTMLElement
+  wrapperElement: HTMLElement,
+  styles: Record<string, string>
 ) => {
   const containerContainsClickedElement =
     wrapperElement.contains(clickedElement);
@@ -10,7 +11,7 @@ export const removeImageControlsAndResetStyles = (
   }
 
   // Remove all custom UI elements and styling
-  wrapperElement.style.border = "none";
+  wrapperElement.classList.remove(styles["active"]);
 
   // Remove all DOM elements except the image
   const children = Array.from(wrapperElement.children);

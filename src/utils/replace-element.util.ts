@@ -26,8 +26,6 @@ export const changeImageToFigure = (
   const oldAttributes = wrapperElement.attributes;
   const newAttributes = figureWrapperElement.attributes;
 
-  console.log(wrapperElement);
-
   // Copy attributes
   for (let i = 0, len = oldAttributes.length; i < len; i++) {
     newAttributes.setNamedItem(oldAttributes.item(i).cloneNode() as Attr);
@@ -41,7 +39,6 @@ export const changeImageToFigure = (
   captionElement.innerHTML = "Caption";
   figureWrapperElement.appendChild(captionElement);
 
-  console.log(figureWrapperElement);
   // Replace wrapperElement with figureWrapperElement
   wrapperElement.replaceWith(figureWrapperElement);
 };

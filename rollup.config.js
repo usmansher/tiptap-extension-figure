@@ -34,12 +34,13 @@ const config = {
     commonjs(),
     typescript(),
     url({
-      include: ["**/*.svg"], // Only process SVG files
+      include: ["**/*.svg"],
       limit: Infinity, // Embed all assets
     }),
     postcss({
       inject: true,
-      minimize: true,
+      modules: true,
+      minimize: false,
     }),
   ],
 };
