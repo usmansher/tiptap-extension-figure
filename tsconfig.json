@@ -9,6 +9,10 @@
     "noEmit": false,
     "rootDir": "./src"
   },
-  "include": ["src", "src/assets/icons/svg.d.ts"],
+  "include": [
+    "src",
+    "src/assets/icons/svg.d.ts",
+    "src/assets/styles/styles.d.ts"
+  ],
   "exclude": ["node_modules", "dist"]
 }
