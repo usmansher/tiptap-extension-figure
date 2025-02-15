@@ -13,7 +13,6 @@ export const removeImageControlsAndResetStyles = (
   // Remove all custom UI elements and styling
   wrapperElement.classList.remove(styles["active"]);
 
-  // Remove all DOM elements except the image
   const children = Array.from(wrapperElement.children);
   children.forEach((child) => {
     if (child.tagName !== "IMG" && child.tagName !== "FIGCAPTION") {
