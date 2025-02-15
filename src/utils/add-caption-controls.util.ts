@@ -22,7 +22,10 @@ export const addCaptionControls = (
     const removeCaptionButton = document.createElement("img");
     removeCaptionButton.src = deleteIcon;
     removeCaptionButton.setAttribute("class", styles["remove-caption-button"]);
-    removeCaptionButton.addEventListener("click", onCaptionRemove);
+    removeCaptionButton.addEventListener("click", (event) => {
+      event.stopPropagation();
+      onCaptionRemove();
+    });
     captionControlsContainer.appendChild(removeCaptionButton);
     wrapperElement.appendChild(captionControlsContainer);
 
@@ -37,7 +40,10 @@ export const addCaptionControls = (
     const addCaptionButton = document.createElement("img");
     addCaptionButton.src = closedCaptionAddIcon;
     addCaptionButton.setAttribute("class", styles["add-caption-button"]);
-    addCaptionButton.addEventListener("click", onCaptionAdd);
+    addCaptionButton.addEventListener("click", (event) => {
+      event.stopPropagation();
+      onCaptionAdd();
+    });
     captionControlsContainer.appendChild(addCaptionButton);
     wrapperElement.appendChild(captionControlsContainer);
   }
