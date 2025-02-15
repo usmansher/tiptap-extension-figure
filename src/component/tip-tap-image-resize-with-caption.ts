@@ -53,8 +53,11 @@ const TiptapImageFigureExtension = ImageExtension.extend<CustomImageOptions>({
       src: {
         default: null,
         parseHTML: (element) => {
-          const img = element.querySelector("img");
-          return img?.getAttribute("src");
+          if (element.tagName === "FIGURE") {
+            const img = element.querySelector("img");
+            return img?.getAttribute("src");
+          }
+          return element.getAttribute("src");
         },
       },
       alt: {
@@ -93,7 +96,9 @@ const TiptapImageFigureExtension = ImageExtension.extend<CustomImageOptions>({
         contentElement: "figcaption",
       },
       {
-        tag: "img[src]",
+        tag: this.options.allowBase64
+          ? "img[src]"
+          : 'img[src]:not([src^="data:"])',
       },
     ];
   },
