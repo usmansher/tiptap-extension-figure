@@ -8,6 +8,7 @@ export const addCaptionControls = (
   onCaptionAdd: () => void
 ) => {
   const captionControlsContainer = document.createElement("div");
+  captionControlsContainer.setAttribute("contenteditable", "false");
   captionControlsContainer.setAttribute(
     "class",
     styles["caption-controls-element"]

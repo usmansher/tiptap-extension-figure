@@ -36,6 +36,12 @@ export const addImageAlignmentControls = (
 ) => {
   const imageAlignmentContainer = document.createElement("div");
 
+  imageAlignmentContainer.setAttribute("contenteditable", "false");
+  imageAlignmentContainer.setAttribute(
+    "class",
+    styles["image-alignment-container"]
+  );
+
   imageAlignmentControls.forEach((imageControl) => {
     const imageAlignmentControl = document.createElement("img");
     imageAlignmentControl.src = imageControl.icon;
@@ -51,11 +57,6 @@ export const addImageAlignmentControls = (
 
     imageAlignmentContainer.appendChild(imageAlignmentControl);
   });
-
-  imageAlignmentContainer.setAttribute(
-    "class",
-    styles["image-alignment-container"]
-  );
 
   wrapperElement.appendChild(imageAlignmentContainer);
 };
