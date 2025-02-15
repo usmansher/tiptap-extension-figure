@@ -183,6 +183,11 @@ const TiptapImageFigureExtension = ImageExtension.extend<CustomImageOptions>({
         event.stopPropagation();
         event.preventDefault();
 
+        // If already visible, do nothing
+        if (this.storage.elementsVisible) {
+          return;
+        }
+
         const isMobile = isMobileScreen();
         if (isMobile) {
           const focusedElement = document.querySelector(
