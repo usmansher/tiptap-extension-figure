@@ -6,7 +6,7 @@
   width: fit-content;
 }
 .wrapper-element.active {
-  border: 1px dashed #6c6c6c;
+  border: 2px dashed #6c6c6c;
 }
 
 .figure-element {
