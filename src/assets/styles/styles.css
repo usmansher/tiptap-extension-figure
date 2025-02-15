@@ -75,10 +75,10 @@
   padding: 0 10px;
 }
 
-.image-alignment-controls {
+.image-alignment-control {
   cursor: pointer;
   font-size: 20px;
 }
-.image-alignment-controls:hover {
+.image-alignment-control:hover {
   opacity: 0.5;
 }

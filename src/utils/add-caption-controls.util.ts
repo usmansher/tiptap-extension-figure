@@ -17,7 +17,7 @@ export const addCaptionControls = (
   // Also, wrapper elements needs to become a div
   if (
     wrapperElement.tagName === "FIGURE" &&
-    !wrapperElement.querySelector(styles[".remove-caption-button"])
+    !wrapperElement.querySelector(styles["remove-caption-button"])
   ) {
     const removeCaptionButton = document.createElement("img");
     removeCaptionButton.src = deleteIcon;
@@ -32,7 +32,7 @@ export const addCaptionControls = (
   // If wrapper element is a div and the button doesn't already exist, add a button to add caption
   if (
     wrapperElement.tagName === "DIV" &&
-    !wrapperElement.querySelector(styles[".add-caption-button"])
+    !wrapperElement.querySelector(styles["add-caption-button"])
   ) {
     const addCaptionButton = document.createElement("img");
     addCaptionButton.src = closedCaptionAddIcon;
