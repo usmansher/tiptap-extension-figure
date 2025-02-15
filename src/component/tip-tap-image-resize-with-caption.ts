@@ -44,6 +44,7 @@ const TiptapImageFigureExtension = ImageExtension.extend<CustomImageOptions>({
   addStorage() {
     return {
       elementsVisible: false,
+      currentActiveWrapper: null as HTMLElement | null,
     };
   },
 
@@ -183,10 +184,31 @@ const TiptapImageFigureExtension = ImageExtension.extend<CustomImageOptions>({
         event.stopPropagation();
         event.preventDefault();
 
-        // If already visible, do nothing
+        // If controls are already visible, check if another image or figure is being clicked on
         if (this.storage.elementsVisible) {
-          return;
+          const clickedElement = event.target as HTMLElement;
+          const currentActiveWrapper = this.storage.currentActiveWrapper;
+
+          // Check if the clicked element is a child of the current active wrapper
+          // If it isn't, we must remove the controls from the previous wrapper and continue
+          // If it is, we do nothing
+          if (
+            currentActiveWrapper &&
+            currentActiveWrapper.contains(clickedElement)
+          ) {
+            return;
+          }
+
+          if (currentActiveWrapper) {
+            removeImageControlsAndResetStyles(
+              clickedElement,
+              currentActiveWrapper,
+              styles
+            );
+          }
         }
+
+        this.storage.currentActiveWrapper = wrapperElement;
 
         const isMobile = isMobileScreen();
         if (isMobile) {
@@ -253,6 +275,7 @@ const TiptapImageFigureExtension = ImageExtension.extend<CustomImageOptions>({
             styles
           );
           this.storage.elementsVisible = false;
+          this.storage.currentActiveWrapper = null;
         }
       });
 
