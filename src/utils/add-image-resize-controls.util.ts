@@ -33,11 +33,13 @@ export const addImageResizeControls = (
       startX = e.clientX;
       startWidth = wrapperElement.offsetWidth;
 
-      const onMouseMove = (e: MouseEvent) => {
-        if (!isResizing) return;
+      const onMouseMove = (event: MouseEvent) => {
+        if (!isResizing) {
+          return;
+        }
 
         const deltaX =
-          index % 2 === 0 ? -(e.clientX - startX) : e.clientX - startX;
+          index % 2 === 0 ? -(event.clientX - startX) : event.clientX - startX;
 
         const newWidth = startWidth + deltaX;
         wrapperElement.style.width = newWidth + "px";
