@@ -19,7 +19,7 @@
   margin: 0.5rem 2rem;
   padding: 0.5rem 0;
 }
-.caption-element.active {
+.caption-element:hover {
   border-radius: 4px;
   border: 2px dashed #6c6c6c;
 }
