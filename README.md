@@ -1,6 +1,6 @@
-# tiptap-image-resize-with-caption
+# tiptap-extension-figure
 
-An extension for Tiptap that allows you to resize and align images as well as add captions to them.
+An extension for Tiptap that allows you to add and edit captions for images as well as align and resize them.
 
 [Tiptap](https://tiptap.dev/) is a suite of open source content editing and real-time collaboration tools for developers building apps like Notion or Google Docs.
 
@@ -9,7 +9,7 @@ An extension for Tiptap that allows you to resize and align images as well as ad
 You can install it using npm:
 
 ```bash
-npm install tiptap-image-resize-with-caption
+npm install @pentestpad/tiptap-extension-figure
 ```
 
 Keep in mind that this package requires Tiptap 2.x.
@@ -18,7 +18,7 @@ Keep in mind that this package requires Tiptap 2.x.
 
 ```javascript
 import StarterKit from "@tiptap/starter-kit";
-import ImageResizeWithCaption from "tiptap-image-resize-with-caption";
+import ImageResizeWithCaption from "@pentestpad/tiptap-extension-figure";
 import { EditorContent, useEditor } from "@tiptap/react";
 
 const editor = useEditor({
