@@ -12,24 +12,15 @@ import {
 
 import styles from "../assets/styles/styles.css";
 
-export interface CustomImageOptions extends ImageOptions {
-  resizable: boolean;
-  alignable: boolean;
-  captionEnabled: boolean;
-}
-
 export const inputRegex = /!\[(.+|:?)]\((\S+)(?:(?:\s+)["'](\S+)["'])?\)/;
 
-const TiptapImageFigureExtension = ImageExtension.extend<CustomImageOptions>({
+const TiptapImageFigureExtension = ImageExtension.extend<ImageOptions>({
   addOptions() {
     return {
       ...this.parent?.(),
       inline: false,
       allowBase64: false,
       HTMLAttributes: {},
-      resizable: true,
-      alignable: true,
-      captionEnabled: true,
     };
   },
 
