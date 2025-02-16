@@ -31,7 +31,6 @@
   left: 50%;
   width: 40px;
   height: 35px;
-  z-index: 999;
   background-color: rgba(255, 255, 255, 0.7);
   border-radius: 4px;
   border: 2px solid #6c6c6c;
@@ -65,7 +64,6 @@
   left: 50%;
   width: 100px;
   height: 25px;
-  z-index: 999;
   background-color: rgba(255, 255, 255, 0.7);
   border-radius: 4px;
   border: 2px solid #6c6c6c;
