@@ -4,6 +4,7 @@
   position: relative;
   cursor: pointer;
   width: fit-content;
+  margin-inline: 0;
 }
 .wrapper-element.active {
   border: 2px dashed #6c6c6c;
