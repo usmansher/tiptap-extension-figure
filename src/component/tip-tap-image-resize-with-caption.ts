@@ -242,13 +242,13 @@ const TiptapImageFigureExtension = ImageExtension.extend<ImageOptions>({
           styles,
           () => {
             // On caption remove
-            changeFigureToImage(wrapperElement);
+            changeFigureToImage(this.editor, wrapperElement);
 
             this.storage.elementsVisible = false;
           },
           () => {
             // On caption add
-            changeImageToFigure(wrapperElement, captionElement);
+            changeImageToFigure(this.editor, wrapperElement, captionElement);
 
             this.storage.elementsVisible = false;
           }
