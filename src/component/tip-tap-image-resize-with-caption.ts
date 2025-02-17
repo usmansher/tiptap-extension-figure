@@ -175,6 +175,8 @@ const TiptapImageFigureExtension = ImageExtension.extend<ImageOptions>({
         event.stopPropagation();
         event.preventDefault();
 
+        editor.commands.setNodeSelection(getPos());
+
         // If controls are already visible, check if another image or figure is being clicked on
         if (this.storage.elementsVisible) {
           const clickedElement = event.target as HTMLElement;
