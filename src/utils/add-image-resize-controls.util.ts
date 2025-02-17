@@ -42,6 +42,7 @@ export const addImageResizeControls = (
           index % 2 === 0 ? -(event.clientX - startX) : event.clientX - startX;
 
         const newWidth = startWidth + deltaX;
+        wrapperElement.style.width = newWidth + "px";
         imageElement.style.width = newWidth + "px";
       };
 
@@ -77,6 +78,7 @@ export const addImageResizeControls = (
               : e.touches[0].clientX - startX;
 
           const newWidth = startWidth + deltaX;
+          wrapperElement.style.width = newWidth + "px";
           imageElement.style.width = newWidth + "px";
         };
 
