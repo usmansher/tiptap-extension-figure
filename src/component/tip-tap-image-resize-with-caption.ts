@@ -196,6 +196,7 @@ const TiptapImageFigureExtension = ImageExtension.extend<ImageOptions>({
               currentActiveWrapper,
               styles
             );
+            editor.commands.blur();
           }
         }
 
