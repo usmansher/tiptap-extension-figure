@@ -1,4 +1,6 @@
-# tiptap-extension-figure
+# TipTap Figure Extension
+
+<img src="demo.gif">
 
 An extension for Tiptap that allows you to add and edit captions for images as well as align and resize them.
 
