@@ -29,5 +29,9 @@
     "@tiptap/core": "^2.0.0",
     "@tiptap/extension-image": "^2.0.0",
     "@tiptap/pm": "^2.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/PentestPad/tiptap-extension-figure.git"
   }
 }
