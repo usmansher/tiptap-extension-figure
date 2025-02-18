@@ -99,16 +99,16 @@ const TiptapImageFigureExtension = ImageExtension.extend<ImageOptions>({
     const hasCaption = node.content.size > 0;
 
     if (hasCaption) {
+      // We should ignore src, alt and title from html attributes if the wrapper element is a figure
+      const { src, alt, title, ...figureHtmlAttributes } = HTMLAttributes;
+
       return [
         "figure",
-        this.options.HTMLAttributes,
-        [
-          "img",
-          mergeAttributes(HTMLAttributes, {
-            draggable: false,
-            contenteditable: false,
-          }),
-        ],
+        mergeAttributes(figureHtmlAttributes, {
+          draggable: false,
+          contenteditable: false,
+        }),
+        ["img", mergeAttributes(HTMLAttributes)],
         ["figcaption", 0],
       ];
     }
@@ -174,6 +174,8 @@ const TiptapImageFigureExtension = ImageExtension.extend<ImageOptions>({
       wrapperElement.addEventListener("click", (event) => {
         event.stopPropagation();
         event.preventDefault();
+
+        editor.commands.setNodeSelection(getPos());
 
         // If controls are already visible, check if another image or figure is being clicked on
         if (this.storage.elementsVisible) {
