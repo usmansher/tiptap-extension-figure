@@ -14,6 +14,18 @@ import styles from "../assets/styles/styles.css";
 
 export const inputRegex = /!\[(.+|:?)]\((\S+)(?:(?:\s+)["'](\S+)["'])?\)/;
 
+declare module "@tiptap/core" {
+  interface Commands<ReturnType> {
+    imageFigure: {
+      setImageFigure: (options: {
+        src: string;
+        alt?: string;
+        title?: string;
+      }) => ReturnType;
+    };
+  }
+}
+
 const TiptapImageFigureExtension = ImageExtension.extend<ImageOptions>({
   addOptions() {
     return {
@@ -31,6 +43,8 @@ const TiptapImageFigureExtension = ImageExtension.extend<ImageOptions>({
   isolating: true,
 
   content: "inline*",
+
+  name: "imageFigure",
 
   addStorage() {
     return {
@@ -78,6 +92,31 @@ const TiptapImageFigureExtension = ImageExtension.extend<ImageOptions>({
             : `${element.style.cssText}`;
         },
       },
+    };
+  },
+
+  addCommands() {
+    return {
+      ...this.parent?.(),
+
+      setImage:
+        (options) =>
+        ({ commands }) => {
+          return commands.insertContent({
+            type: this.name,
+            attrs: options,
+          });
+        },
+
+      setImageFigure:
+        (options) =>
+        ({ commands }) => {
+          return commands.insertContent({
+            type: this.name,
+            attrs: options,
+            content: [],
+          });
+        },
     };
   },
 
