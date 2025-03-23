@@ -200,6 +200,11 @@ const TiptapImageFigureExtension = ImageExtension.extend<ImageOptions>({
         captionElement.setAttribute("class", styles["caption-element"]);
         captionElement.setAttribute("contenteditable", "true");
         wrapperElement.appendChild(captionElement);
+
+        captionElement.addEventListener("click", (event) => {
+          // Do not propagate click event to the wrapper element
+          event.stopPropagation();
+        });
       }
 
       if (!editable) return { dom: wrapperElement, contentDOM: captionElement };
