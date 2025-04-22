@@ -123,8 +123,11 @@ const TiptapImageFigureExtension = ImageExtension.extend<ImageOptions>({
   parseHTML() {
     return [
       {
-        tag: "figure",
+        tag: "figure:has(figcaption)",
         contentElement: "figcaption",
+      },
+      {
+        tag: "figure:not(:has(figcaption))",
       },
       {
         tag: this.options.allowBase64
