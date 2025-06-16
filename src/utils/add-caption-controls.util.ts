@@ -7,45 +7,49 @@ export const addCaptionControls = (
   onCaptionRemove: () => void,
   onCaptionAdd: () => void
 ) => {
+  // 1) Remove any old controls
+  const old = wrapperElement.querySelector(
+    `.${styles["caption-controls-element"]}`
+  );
+  if (old) old.remove();
+
+  // 2) Create the container
   const captionControlsContainer = document.createElement("div");
   captionControlsContainer.setAttribute("contenteditable", "false");
-  captionControlsContainer.setAttribute(
-    "class",
+  captionControlsContainer.classList.add(
     styles["caption-controls-element"]
   );
 
-  // If wrapper element is a figure and the button doesn't already exist, add a button to remove caption
-  // Also, wrapper elements needs to become a div
-  if (
-    wrapperElement.tagName === "FIGURE" &&
-    !wrapperElement.querySelector(styles["remove-caption-button"])
-  ) {
-    const removeCaptionButton = document.createElement("img");
-    removeCaptionButton.src = deleteIcon;
-    removeCaptionButton.setAttribute("class", styles["remove-caption-button"]);
-    removeCaptionButton.addEventListener("click", (event) => {
-      event.stopPropagation();
+  // 3) Find (or assume) the <figcaption>
+  let captionEl = wrapperElement.querySelector("figcaption");
+  if (!captionEl) {
+    // if for some reason it doesn't exist, create & append it
+    captionEl = document.createElement("figcaption");
+    captionEl.setAttribute("contenteditable", "true");
+    captionEl.textContent = "";
+    wrapperElement.appendChild(captionEl);
+  }
+
+  const hasCaption = captionEl.textContent?.trim().length > 0;
+
+  // 4) Build the appropriate button
+  const button = document.createElement("img");
+  button.setAttribute("class", hasCaption
+    ? styles["remove-caption-button"]
+    : styles["add-caption-button"]
+  );
+  button.setAttribute("src", hasCaption ? deleteIcon : closedCaptionAddIcon);
+  button.setAttribute("title", hasCaption ? "Remove caption" : "Add caption");
+  button.addEventListener("click", (e) => {
+    e.stopPropagation();
+    if (hasCaption) {
       onCaptionRemove();
-    });
-    captionControlsContainer.appendChild(removeCaptionButton);
-    wrapperElement.appendChild(captionControlsContainer);
-
-    return;
-  }
-
-  // If wrapper element is a div and the button doesn't already exist, add a button to add caption
-  if (
-    wrapperElement.tagName === "DIV" &&
-    !wrapperElement.querySelector(styles["add-caption-button"])
-  ) {
-    const addCaptionButton = document.createElement("img");
-    addCaptionButton.src = closedCaptionAddIcon;
-    addCaptionButton.setAttribute("class", styles["add-caption-button"]);
-    addCaptionButton.addEventListener("click", (event) => {
-      event.stopPropagation();
+    } else {
       onCaptionAdd();
-    });
-    captionControlsContainer.appendChild(addCaptionButton);
-    wrapperElement.appendChild(captionControlsContainer);
-  }
+    }
+  });
+
+  // 5) Put it all together
+  captionControlsContainer.appendChild(button);
+  wrapperElement.appendChild(captionControlsContainer);
 };
