@@ -3,7 +3,7 @@ type ImageAlignmentControlType = "left" | "center" | "right";
 interface ImageAlignmentControls {
   type: ImageAlignmentControlType;
   icon: string;
-  styleToApply: string;
+  classToApply: string;
 }
 
 import leftIcon from "../assets/icons/format-align-left.svg";
@@ -14,17 +14,17 @@ const imageAlignmentControls: ImageAlignmentControls[] = [
   {
     type: "left",
     icon: leftIcon,
-    styleToApply: "margin: 0 auto 0 0;",
+    classToApply: "md:float-left"
   },
   {
     type: "center",
     icon: centerIcon,
-    styleToApply: "margin: 0 auto;",
+    classToApply: "float-none"
   },
   {
     type: "right",
     icon: rightIcon,
-    styleToApply: "margin: 0 0 0 auto;",
+    classToApply: "md:float-right"
   },
 ];
 
@@ -51,7 +51,7 @@ export const addImageAlignmentControls = (
     );
     imageAlignmentControl.addEventListener("click", (event) => {
       event.stopPropagation();
-      imageElement.style.cssText = `${imageElement.style.cssText} ${imageControl.styleToApply}`;
+      imageElement.classList.add(imageControl.classToApply);
       onAlign();
     });
 

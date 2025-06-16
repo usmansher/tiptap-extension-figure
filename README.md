@@ -1,6 +1,6 @@
 # TipTap Figures Extension
 
-![demo](https://raw.githubusercontent.com/PentestPad/tiptap-extension-figure/refs/heads/main/demo.gif?raw=true)
+![demo](https://raw.githubusercontent.com/usmansher/tiptap-extension-figure/refs/heads/main/demo.gif?raw=true)
 
 An extension for Tiptap that allows you to add and edit captions for images as well as align and resize them.
 
@@ -11,7 +11,7 @@ An extension for Tiptap that allows you to add and edit captions for images as w
 You can install it using npm:
 
 ```bash
-npm install @pentestpad/tiptap-extension-figure
+npm install @usmansher/tiptap-extension-figure
 ```
 
 Keep in mind that this package requires Tiptap 2.x.
@@ -20,7 +20,7 @@ Keep in mind that this package requires Tiptap 2.x.
 
 ```javascript
 import StarterKit from "@tiptap/starter-kit";
-import ImageResizeWithCaption from "@pentestpad/tiptap-extension-figure";
+import ImageResizeWithCaption from "@usmansher/tiptap-extension-figure";
 import { EditorContent, useEditor } from "@tiptap/react";
 
 const editor = useEditor({
