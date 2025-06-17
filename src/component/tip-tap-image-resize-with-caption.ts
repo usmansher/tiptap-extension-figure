@@ -185,7 +185,6 @@ const TiptapImageFigureExtension = ImageExtension.extend<ImageOptions>({
             style: imageElement.style.cssText,
           };
 
-          
           editor.view.dispatch(
             editor.view.state.tr.setNodeMarkup(getPos(), null, newAttrs)
           );
@@ -199,8 +198,9 @@ const TiptapImageFigureExtension = ImageExtension.extend<ImageOptions>({
       const { style } = node.attrs;
 
       // Create wrapper based on content
+      const hasCaption = node.content.size > 0;
       const wrapperElement = document.createElement(
-        node.content.size > 0 ? "figure" : "div"
+        hasCaption ? "figure" : "div"
       );
       wrapperElement.setAttribute("class", styles["wrapper-element"]);
       wrapperElement.setAttribute("style", style);
@@ -208,7 +208,10 @@ const TiptapImageFigureExtension = ImageExtension.extend<ImageOptions>({
       const imageElement = document.createElement("img");
       wrapperElement.appendChild(imageElement);
 
-      const captionElement = document.createElement("figcaption");
+      let captionElement: HTMLElement | undefined = undefined;
+      if (hasCaption) {
+        captionElement = document.createElement("figcaption");
+      }
 
       // Set up image attributes
       Object.entries(node.attrs).forEach(([key, value]) => {
@@ -219,7 +222,7 @@ const TiptapImageFigureExtension = ImageExtension.extend<ImageOptions>({
       });
 
       // Add caption if needed
-      if (node.content.size > 0) {
+      if (hasCaption && captionElement) {
         captionElement.setAttribute("class", styles["caption-element"]);
         captionElement.setAttribute("contenteditable", "true");
         wrapperElement.appendChild(captionElement);
@@ -230,14 +233,19 @@ const TiptapImageFigureExtension = ImageExtension.extend<ImageOptions>({
         });
       }
 
-      if (!editable) return { dom: wrapperElement, contentDOM: captionElement };
+      if (!editable) {
+        return {
+          dom: wrapperElement,
+          contentDOM: hasCaption && captionElement ? captionElement : undefined,
+        };
+      }
 
       // Initialize control variables
       let isResizing = false;
       let startX = 0;
       let startWidth = 0;
 
-      // Handle click on container
+      // Handle click on container (works for both <figure> and <div>)
       wrapperElement.addEventListener("click", (event) => {
         event.stopPropagation();
         event.preventDefault();
@@ -325,14 +333,50 @@ const TiptapImageFigureExtension = ImageExtension.extend<ImageOptions>({
           styles,
           () => {
             // On caption remove
-            changeFigureToImage(this.editor, wrapperElement);
-
+            if (typeof getPos === "function") {
+              const pos = getPos();
+              // Clear only the caption content (not the entire node content)
+              const contentStart = pos + 1; // Start of node content
+              const contentEnd = pos + node.content.size + 1; // End of node content
+              if (node.content.size > 0) {
+                editor.view.dispatch(
+                  editor.view.state.tr.delete(contentStart, contentEnd)
+                );
+              }
+              
+              // Update controls after caption removal
+              setTimeout(() => {
+                removeImageControlsAndResetStyles(
+                  wrapperElement,
+                  wrapperElement,
+                  styles
+                );
+                // Re-add controls with updated state (no caption)
+                wrapperElement.click();
+              }, 10);
+            }
             this.storage.elementsVisible = false;
           },
           () => {
             // On caption add
-            changeImageToFigure(this.editor, wrapperElement, captionElement);
-
+            if (typeof getPos === "function") {
+              const pos = getPos();
+              // Add caption content
+              editor.view.dispatch(
+                editor.view.state.tr.insert(pos + 1, editor.schema.text("Caption"))
+              );
+              
+              // Update controls after caption addition
+              setTimeout(() => {
+                removeImageControlsAndResetStyles(
+                  wrapperElement,
+                  wrapperElement,
+                  styles
+                );
+                // Re-add controls with updated state (has caption)
+                wrapperElement.click();
+              }, 10);
+            }
             this.storage.elementsVisible = false;
           }
         );
@@ -355,10 +399,13 @@ const TiptapImageFigureExtension = ImageExtension.extend<ImageOptions>({
 
       return {
         dom: wrapperElement,
-        contentDOM: node.content.size > 0 ? captionElement : undefined,
+        contentDOM: hasCaption && captionElement ? captionElement : undefined,
         ignoreMutation: (mutation) => {
           // We must ignore mutations that happened outside the captionElement
-          return !captionElement.contains(mutation.target);
+          if (captionElement) {
+            return !captionElement.contains(mutation.target);
+          }
+          return true; // Ignore all mutations if no caption
         },
       };
     };
