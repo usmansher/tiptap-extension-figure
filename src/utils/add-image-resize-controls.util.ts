@@ -19,12 +19,24 @@ export const addImageResizeControls = (
     `bottom: ${dotPosition}; right: ${dotPosition}; cursor: nwse-resize;`,
   ];
 
+  const newWidth = imageElement.style.width || imageElement.getAttribute('width');
+  const newHeight = imageElement.style.height || imageElement.getAttribute('height');
+
   Array.from({ length: 4 }, (_, index) => {
     const dotElement = document.createElement("div");
     dotElement.setAttribute("class", styles["dot-element"]);
     dotElement.setAttribute(
       "style",
       `width: ${dotSize}px; height: ${dotSize}px; ${dotsPosition[index]}`
+    );
+    dotElement.setAttribute(
+      "width",
+      newWidth
+    );
+
+    dotElement.setAttribute(
+      "height",
+      newHeight
     );
 
     dotElement.addEventListener("mousedown", (e) => {
@@ -44,6 +56,7 @@ export const addImageResizeControls = (
         const newWidth = startWidth + deltaX;
         wrapperElement.style.width = newWidth + "px";
         imageElement.style.width = newWidth + "px";
+
       };
 
       const onMouseUp = () => {

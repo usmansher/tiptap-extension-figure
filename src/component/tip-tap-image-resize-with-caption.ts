@@ -21,6 +21,8 @@ declare module "@tiptap/core" {
         src: string;
         alt?: string;
         title?: string;
+        width?: string | Number;
+        height?: string | Number;
       }) => ReturnType;
     };
   }
@@ -78,6 +80,22 @@ const TiptapImageFigureExtension = ImageExtension.extend<ImageOptions>({
         parseHTML: (element) => {
           const img = element.querySelector("img");
           return img?.getAttribute("title");
+        },
+      },
+      width: {
+        default: null,
+        parseHTML: (element) =>
+          element.querySelector("img")?.getAttribute("width"),
+        renderHTML: (attributes) => {
+          return { width: attributes.width };
+        },
+      },
+      height: {
+        default: null,
+        parseHTML: (element) =>
+          element.querySelector("img")?.getAttribute("height"),
+        renderHTML: (attributes) => {
+          return { height: attributes.height };
         },
       },
       style: {
@@ -166,6 +184,8 @@ const TiptapImageFigureExtension = ImageExtension.extend<ImageOptions>({
             ...node.attrs,
             style: imageElement.style.cssText,
           };
+
+          
           editor.view.dispatch(
             editor.view.state.tr.setNodeMarkup(getPos(), null, newAttrs)
           );
@@ -281,7 +301,21 @@ const TiptapImageFigureExtension = ImageExtension.extend<ImageOptions>({
           startWidth,
           styles,
           () => {
-            dispatchNodeView();
+            // Get new width and height in pixels from the image element
+            const newWidth = imageElement.offsetWidth;
+            const newHeight = imageElement.offsetHeight;
+            if (typeof getPos === "function") {
+              const newAttrs = {
+                ...node.attrs,
+                width: newWidth,
+                height: newHeight,
+                style: imageElement.style.cssText,
+              };
+              editor.view.dispatch(
+                editor.view.state.tr.setNodeMarkup(getPos(), null, newAttrs)
+              );
+              this.storage.elementsVisible = false;
+            }
             editor.commands.focus();
           }
         );
@@ -336,8 +370,8 @@ const TiptapImageFigureExtension = ImageExtension.extend<ImageOptions>({
         find: inputRegex,
         type: this.type,
         getAttributes: (match) => {
-          const [, alt, src, title] = match;
-          return { src, alt, title };
+          const [, alt, src, title, width, height] = match;
+          return { src, alt, title, width, height };
         },
       }),
     ];
