@@ -15,9 +15,9 @@
     "@rollup/plugin-babel": "^6.0.4",
     "@rollup/plugin-commonjs": "^28.0.2",
     "@rollup/plugin-url": "^8.0.2",
-    "@tiptap/core": "^2.11.5",
-    "@tiptap/extension-image": "^2.11.5",
-    "@tiptap/pm": "^2.11.5",
+    "@tiptap/core": "^2.22.0",
+    "@tiptap/extension-image": "^2.22.0",
+    "@tiptap/pm": "^2.22.0",
     "rollup": "^4.34.8",
     "rollup-plugin-auto-external": "^2.0.0",
     "rollup-plugin-postcss": "^4.0.2",
@@ -26,9 +26,9 @@
     "typescript": "^5.7.3"
   },
   "peerDependencies": {
-    "@tiptap/core": "^2.0.0",
-    "@tiptap/extension-image": "^2.0.0",
-    "@tiptap/pm": "^2.0.0"
+    "@tiptap/core": "^2.22.0",
+    "@tiptap/extension-image": "^2.22.0",
+    "@tiptap/pm": "^2.22.0"
   },
   "repository": {
     "type": "git",
